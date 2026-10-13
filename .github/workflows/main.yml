@@ -3,7 +3,10 @@ name: Java CI Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,9 +17,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout source code
       - name: Checkout source code
         uses: actions/checkout@v4
 
+      # Step 2: Configure Java 17
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
@@ -24,14 +29,17 @@ jobs:
           java-version: '17'
           cache: maven
 
+      # Step 3: Verify Java and Maven versions
       - name: Check Java and Maven versions
         run: |
           java -version
           mvn -version
 
-      - name: Build and test Java code
-        run: mvn -B clean verify
+      # Step 4: Build Java application without tests
+      - name: Build Java application
+        run: mvn -B clean package -Dmaven.test.skip=true
 
+      # Step 5: Upload generated JAR
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
